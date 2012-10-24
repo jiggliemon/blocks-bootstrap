@@ -1,0 +1,15 @@
+[submodule "www/js/blocks"]
+	path = www/js/blocks
+	url = git@github.com:jiggliemon/blocks.git
+[submodule "www/js/cajon"]
+	path = www/js/cajon
+	url = https://github.com/requirejs/cajon.git
+[submodule "www/js/yaul"]
+	path = www/js/yaul
+	url = git@github.com:jiggliemon/yaul.git
+[submodule "www/js/yate"]
+	path = www/js/yate
+	url = git@github.com:jiggliemon/yate.git
+[submodule "www/js/yeah"]
+	path = www/js/yeah
+	url = git@github.com:jiggliemon/yeah.git
