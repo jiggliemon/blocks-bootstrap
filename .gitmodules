@@ -13,3 +13,6 @@
 [submodule "www/js/yeah"]
 	path = www/js/yeah
 	url = git@github.com:jiggliemon/yeah.git
+[submodule "www/js/elements"]
+	path = www/js/elements
+	url = https://github.com/arian/elements.git
