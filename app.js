@@ -1,45 +1,49 @@
-var http = require('http');
-var fs = require('fs');
-var path = require('path');
+var http = require('http')
+var fs = require('fs')
+var path = require('path')
  
-http.createServer(function (request, response) {
+http.createServer(function ( request, response ) {
  
-    console.log('request starting...');
-    var base = './www'
-    var filePath = base + request.url;
-    if (filePath == base + '/')
-        filePath = base+'/index.html';
-         
-    var extname = path.extname(filePath);
-    var contentType = 'text/html';
-    switch (extname) {
-        case '.js':
-            contentType = 'text/javascript';
-            break;
-        case '.css':
-            contentType = 'text/css';
-            break;
+  var base = './www'
+  var filePath = base + request.url
+  
+  if ( filePath == base + '/' ) {
+    filePath = base+'/index.html'
+  }
+       
+  var extname = path.extname(filePath)
+  var contentType = 'text/html'
+
+  switch ( extname ) {
+    case '.js':
+      contentType = 'text/javascript'
+      break
+    case '.css':
+      contentType = 'text/css'
+      break
+  }
+   
+  console.log(filePath)
+  path.exists(filePath, function( exists ) {
+      
+    if ( exists ) {
+      fs.readFile(filePath, function( error, content ) {
+        if (error) {
+          response.writeHead(500)
+          response.end()
+        } else {
+          response.writeHead(200, { 
+            'Content-Type': contentType 
+          })
+          response.end(content, 'utf-8')
+        }
+      })
+    } else {
+      response.writeHead(404)
+      response.end()
     }
+
+  })
      
-    console.log(filePath)
-    path.exists(filePath, function(exists) {
-        
-        if (exists) {
-            fs.readFile(filePath, function(error, content) {
-                if (error) {
-                    response.writeHead(500);
-                    response.end();
-                }
-                else {
-                    response.writeHead(200, { 'Content-Type': contentType });
-                    response.end(content, 'utf-8');
-                }
-            });
-        }
-        else {
-            response.writeHead(404);
-            response.end();
-        }
-    });
-     
-}).listen(5000);
+}).listen(5000)
+console.log('Server started at http://localhost:5000')
