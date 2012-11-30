@@ -9,9 +9,7 @@ var header = block.create({
     "brand": {
       "mouseover,mouseout": function (e, self) {
         e.preventDefault()
-        console.log(self)
         self.doSomething()
-
       }
       ,"click": function (e, self) {
         e.preventDefault()

@@ -1,0 +1,20 @@
+<% var name = this.getName() %>
+<% var prefix = name?'-'+name+'-':'' %>
+<div class="<%= prefix %>block-wrapper" bind="wrapper">
+  <div class="<%= prefix %>block-inner">
+    <div class="<%= prefix %>header-wrapper">
+      <div class="<%= prefix %>header-inner">
+        <header bind="header"></header>
+      </div>
+    </div>
+
+    <section bind="items"></section>
+
+    <div class="<%= prefix %>footer-wrapper">
+      <div class="<%= prefix %>footer-inner">
+        <footer bind="footer"></footer>
+      </div>
+    </div>
+
+  </div>
+</div>

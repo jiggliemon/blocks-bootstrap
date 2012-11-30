@@ -16,3 +16,6 @@
 [submodule "www/js/elements"]
 	path = www/js/elements
 	url = https://github.com/arian/elements.git
+[submodule "www/js/lodash"]
+	path = www/js/lodash
+	url = https://github.com/bestiejs/lodash.git
