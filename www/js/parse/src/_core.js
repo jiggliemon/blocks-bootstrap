@@ -1,4 +1,6 @@
 var _ = require('lodash')
+var extend = require('lodash').extend
+var each = require('lodash').each
 // var Obj = require('./object')
 // var Op = require('./op')
 // var ACL = require('./acl')
@@ -26,14 +28,14 @@ var Parse = {
 //   Parse.XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
 //   exports.Parse = Parse;
 // } else {
-  Parse._ = _.noConflict();
+  // Parse._ = _.noConflict();
 
-  if (typeof(localStorage) !== "undefined") {
-    Parse.localStorage = localStorage;
-  }
-  if (typeof(XMLHttpRequest) !== "undefined") {
-    Parse.XMLHttpRequest = XMLHttpRequest;
-  }
+  // if (typeof(localStorage) !== "undefined") {
+  //   Parse.localStorage = localStorage;
+  // }
+  // if (typeof(XMLHttpRequest) !== "undefined") {
+  //   Parse.XMLHttpRequest = XMLHttpRequest;
+  // }
 // }
 
 // // If jQuery or Zepto has been included, grab a reference to it.
@@ -45,58 +47,58 @@ var Parse = {
 // -------
 
 // Shared empty constructor function to aid in prototype-chain creation.
-var EmptyConstructor = function () {};
+var EmptyConstructor = function () {}
 
 
 // Helper function to correctly set up the prototype chain, for subclasses.
 // Similar to `goog.inherits`, but uses a hash of prototype properties and
 // class properties to be extended.
 var inherits = function (parent, protoProps, staticProps) {
-  var child;
+  var child
 
   // The constructor function for the new subclass is either defined by you
   // (the "constructor" property in your `extend` definition), or defaulted
   // by us to simply call the parent's constructor.
   if (protoProps && protoProps.hasOwnProperty('constructor')) {
-    child = protoProps.constructor;
+    child = protoProps.constructor
   } else {
     /** @ignore */
     child = function(){ 
-      parent.apply(this, arguments); 
+      parent.apply(this, arguments)
     }
   }
 
   // Inherit class (static) properties from parent.
-  _.extend(child, parent);
+  extend(child, parent)
 
   // Set the prototype chain to inherit from `parent`, without calling
   // `parent`'s constructor function.
-  EmptyConstructor.prototype = parent.prototype;
-  child.prototype = new EmptyConstructor();
+  EmptyConstructor.prototype = parent.prototype
+  child.prototype = new EmptyConstructor()
 
   // Add prototype properties (instance properties) to the subclass,
   // if supplied.
   if (protoProps) {
-    _.extend(child.prototype, protoProps);
+    extend(child.prototype, protoProps)
   }
 
   // Add static properties to the constructor function, if supplied.
   if (staticProps) {
-    _.extend(child, staticProps);
+    extend(child, staticProps)
   }
 
   // Correctly set child's `prototype.constructor`.
-  child.prototype.constructor = child;
+  child.prototype.constructor = child
 
   // Set a convenience property in case the parent's prototype is
   // needed later.
-  child.__super__ = parent.prototype;
+  child.__super__ = parent.prototype
 
-  return child;
+  return child
 }
 
 // Set the server for Parse to talk to.
-Parse.serverURL = "https://api.parse.com";
+Parse.serverURL = "https://api.parse.com"
 
 /**
  * Call this method first to set up your authentication tokens for Parse.
@@ -105,7 +107,7 @@ Parse.serverURL = "https://api.parse.com";
  * @param {String} javaScriptKey Your Parse JavaScript Key.
  */
 Parse.initialize = function (applicationId, javaScriptKey) {
-  Parse._initialize(applicationId, javaScriptKey);
+  Parse._initialize(applicationId, javaScriptKey)
 };
 
 /**
@@ -116,10 +118,10 @@ Parse.initialize = function (applicationId, javaScriptKey) {
  * @param {String} masterKey Your Parse Master Key.
  */
 Parse._initialize = function (applicationId, javaScriptKey, masterKey) {
-  Parse.applicationId = applicationId;
-  Parse.javaScriptKey = javaScriptKey;
-  Parse.masterKey = masterKey;
-  Parse._useMasterKey = false;
+  Parse.applicationId = applicationId
+  Parse.javaScriptKey = javaScriptKey
+  Parse.masterKey = masterKey
+  Parse._useMasterKey = false
 };
 
 /**
@@ -130,18 +132,18 @@ Parse._initialize = function (applicationId, javaScriptKey, masterKey) {
  */
 Parse._getParsePath = function (path) {
   if (!Parse.applicationId) {
-    throw "You need to call Parse.initialize before using Parse.";
+    throw "You need to call Parse.initialize before using Parse."
   }
   if (!path) {
-    path = "";
+    path = ""
   }
   if (typeof path !== 'string') {
-    throw "Tried to get a localStorage path that wasn't a String.";
+    throw "Tried to get a localStorage path that wasn't a String."
   }
   if (path[0] === "/") {
-    path = path.substring(1);
+    path = path.substring(1)
   }
-  return "Parse/" + Parse.applicationId + "/" + path;
+  return "Parse/" + Parse.applicationId + "/" + path
 };
 
 /**
@@ -152,28 +154,28 @@ Parse._installationId = null;
 Parse._getInstallationId = function () {
   // See if it's cached in RAM.
   if (Parse._installationId) {
-    return Parse._installationId;
+    return Parse._installationId
   }
 
   // Try to get it from localStorage.
   var path = Parse._getParsePath("installationId");
-  Parse._installationId = Parse.localStorage.getItem(path);
+  Parse._installationId = Parse.localStorage.getItem(path)
 
   if (!Parse._installationId || Parse._installationId === "") {
     // It wasn't in localStorage, so create a new one.
     var hexOctet = function() {
-      return Math.floor((1+Math.random())*0x10000).toString(16).substring(1);
+      return Math.floor((1+Math.random())*0x10000).toString(16).substring(1)
     };
     Parse._installationId = (
       hexOctet() + hexOctet() + "-" +
       hexOctet() + "-" +
       hexOctet() + "-" +
       hexOctet() + "-" +
-      hexOctet() + hexOctet() + hexOctet());
-    Parse.localStorage.setItem(path, Parse._installationId);
+      hexOctet() + hexOctet() + hexOctet())
+    Parse.localStorage.setItem(path, Parse._installationId)
   }
 
-  return Parse._installationId;
+  return Parse._installationId
 };
 
 Parse._parseDate = function (iso8601) {
@@ -181,59 +183,59 @@ Parse._parseDate = function (iso8601) {
     "^([0-9]{1,4})-([0-9]{1,2})-([0-9]{1,2})" + "T" +
     "([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2})" +
     "(.([0-9]+))?" + "Z$");
-  var match = regexp.exec(iso8601);
+  var match = regexp.exec(iso8601)
   if (!match) {
-    return null;
+    return null
   }
 
-  var year = match[1] || 0;
-  var month = (match[2] || 1) - 1;
-  var day = match[3] || 0;
-  var hour = match[4] || 0;
-  var minute = match[5] || 0;
-  var second = match[6] || 0;
-  var milli = match[8] || 0;
+  var year = match[1] || 0
+  var month = (match[2] || 1) - 1
+  var day = match[3] || 0
+  var hour = match[4] || 0
+  var minute = match[5] || 0
+  var second = match[6] || 0
+  var milli = match[8] || 0
 
-  return new Date(Date.UTC(year, month, day, hour, minute, second, milli));
-};
+  return new Date(Date.UTC(year, month, day, hour, minute, second, milli))
+}
 
 Parse._ajaxIE8 = function (method, url, data, success, error) {
-  var xdr = new XDomainRequest();
+  var xdr = new XDomainRequest()
   xdr.onload = function() {
-    var response;
+    var response
     try {
-      response = JSON.parse(xdr.responseText);
+      response = JSON.parse(xdr.responseText)
     } catch (e) {
       if (error) {
-        error(xdr);
+        error(xdr)
       }
     }
     if (response) {
       if (success) {
-        success(response, xdr);
+        success(response, xdr)
       }
     }
   };
   xdr.onerror = xdr.ontimeout = function() {
     error(xdr);
   };
-  xdr.onprogress = function() {};
-  xdr.open(method, url);
-  xdr.send(data);
+  xdr.onprogress = function() {}
+  xdr.open(method, url)
+  xdr.send(data)
 };
 
 Parse._ajax = function(method, url, data, success, error) {
   if (typeof(XDomainRequest) !== "undefined") {
-    return Parse._ajaxIE8(method, url, data, success, error);
+    return Parse._ajaxIE8(method, url, data, success, error)
   }
 
-  var handled = false;
+  var handled = false
 
-  var xhr = new Parse.XMLHttpRequest();
+  var xhr = new Parse.XMLHttpRequest()
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4) {
       if (handled) {
-        return;
+        return
       }
       handled = true;
 
@@ -452,23 +454,30 @@ Parse._getValue = function(object, prop) {
 // };
 
 /**
- * This is like _.each, except:
+ * This is like each, except:
  * * it doesn't work for so-called array-like objects,
  * * it does work for dictionaries with a "length" attribute.
  */
 Parse._each = function(obj, callback) {
   if (_.isObject(obj)) {
-    _.each(_.keys(obj), function(key) {
+    each(_.keys(obj), function(key) {
       callback(obj[key], key);
     });
   } else {
-    _.each(obj, callback);
+    each(obj, callback)
   }
 };
 
 // Helper function to check null or undefined.
 Parse._isNullOrUndefined = function(x) {
-  return _.isNull(x) || _.isUndefined(x);
-};
+  return _.isNull(x) || _.isUndefined(x)
+}
+
+var config = module.config()
+if (config) {
+  console.log(config)
+  Parse.initialize(config.appId, config.jsKey)
+}
+
 
 module.exports = Parse

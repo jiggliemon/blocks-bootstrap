@@ -13,15 +13,15 @@ var config = require('config')
 var block = require('blocks/block')
 var tmpl = require('text!./layouts/2-col-left.tmpl')
 var header = require('./header/index')
+var Left = require('./left/index')
 var Todo = require('todo')
-var Countdown = require('countdown')
 
 var page = new block('page', {
    template:tmpl
   ,children: {
      header: new header('header')
-    ,left: [require('./left/index'), new Countdown]
-    ,content: [new Todo, new Countdown]
+    ,left: [new Left, new Todo('left-todo')]
+    ,content: new Todo('content-todo')
   }
 })
 

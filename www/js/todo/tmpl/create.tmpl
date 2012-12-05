@@ -1,6 +1,7 @@
 <form class="well" bind="create-item">
   <div class="field input-append">
-    <input class="span2" id="add-item" bind="add-item" type="text">
+    <label for="add-item-<%=id %>"><%=create_a_task%></label>
+    <input class="span2 add-item" id="add-item-<%=id %>" name="add-item-<%=id %>" bind="add-item" type="text">
     <button class="btn" bind="submit">Add</button>
   </div>
 </form>

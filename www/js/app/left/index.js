@@ -36,26 +36,28 @@ function forEach (list, fn) {
   }
 }
 
-var left = new block('left', {
+var left = block.create({
    template:tmpl
   ,events: {
-    'menu-list:click': function (e) {
-      var target = e.target || e.srcElement
-      var menuList = this.bound('menu-list')
+    'menu-list': {
+      click: function (e) {
+        var target = e.target || e.srcElement
+        var menuList = this.bound('menu-list')
 
-      /**
-       *  remove the active state from all
-       *  the rest of the nav items
-       */
-      if ( menuList ) {
-        var as = menuList.querySelectorAll('a')
-        if ( as ) {
-          forEach( as, removeActive)
+        /**
+         *  remove the active state from all
+         *  the rest of the nav items
+         */
+        if ( menuList ) {
+          var as = menuList.querySelectorAll('a')
+          if ( as ) {
+            forEach( as, removeActive)
+          }
         }
-      }
 
-      if ( target.tagName == 'A' ) {
-        addActive(target)
+        if ( target.tagName == 'A' ) {
+          addActive(target)
+        }
       }
     }
   }

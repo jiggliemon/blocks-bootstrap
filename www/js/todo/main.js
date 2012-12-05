@@ -1,6 +1,6 @@
 var block = require('blocks/block')
 var tmpl = require('text!./tmpl/layout.tmpl')
-
+var parse = require('parse/object')
 
 var TodoCreate = require('./create')
 
@@ -8,9 +8,7 @@ var TodoCreate = require('./create')
 var TodoApp = block.create({
   template: tmpl
   ,children: {
-    header: [
-      new TodoCreate
-    ]
+    header: [TodoCreate]
   }
 },{
    name: 'todo'

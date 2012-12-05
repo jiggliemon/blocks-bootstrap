@@ -72,6 +72,16 @@ body,html {padding: 0; margin: 0;height: 100%}
 .main-wrapper {}
 .main-wrapper .main-inner {}
 
+.-todo-block-wrapper {
+  margin-top: 20px;
+}
+.-todo-block-wrapper .-todo-block-inner {}
+
+/* tailor the input fields width to it's wrappers size */
+.span3 .-todo-block-wrapper .field .add-item {width: 110px;}
+.span4 .-todo-block-wrapper .field .add-item {width: 190px;}
+.span5 .-todo-block-wrapper .field .add-item {width: 270px;}
+.span9 .-todo-block-wrapper .field .add-item {width: 590px;}
 
 
 
