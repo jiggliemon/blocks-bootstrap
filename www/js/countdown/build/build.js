@@ -1,20 +1,16 @@
 ({
-   baseUrl: "./"
+   baseUrl: "../../"
   ,packages:[
      {name:'blocks',location:'blocks/src'}
+    ,{name:'countdown', location: 'countdown/src'}
     ,{name:'yaul',location:'yaul/src'}
     ,{name:'yeah',location:'yeah/src',main:'index'}
     ,{name:'yate',location:'yate/src',main:'index'}
-
   ]
-  ,name: 'blocks'
-  ,include: ['blocks/block','yeah','yate']
-  ,optimize: 'uglify'
-  ,uglify: {
-    "consolidate_primitive_values": true
-  }
+  ,include: ['blocks/block','yeah','yate','countdown']
   ,stubModules:['text']
+  ,optimize: 'none'
   //,findNestedDependencies: true
-  ,out: "blocks.min.js"
+  ,out: "../countdown.js"
   ,cjsTranslate: true
 })

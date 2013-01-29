@@ -11,7 +11,8 @@ var config = extend({
   ,apiVersion: 1
   ,allowedRoutes: ["classes","push","users","login","functions","requestPasswordReset"]
   ,serverURL: "https://api.parse.com"
-}, (module.config && module.config())
+
+}, (module.config && module.config()) || {})
 
 var Parse = {
   
@@ -210,7 +211,7 @@ function ajaxIE8 (method, url, data, success, error) {
   xdr.send(data)
 }
 
-function ajax (method, url, data, success, error) {
+function ajax (method, url, data, callback) {
   if (typeof(XDomainRequest) !== "undefined") {
     return ajaxIE8(method, url, data, success, error)
   }

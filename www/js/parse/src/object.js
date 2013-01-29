@@ -8,33 +8,53 @@ function Obj (attrs, options) {
 Obj.prototype = {
    add: function (attr, item) {}
   ,addUnique: function (attr, item) {}
-  ,change: function (options) {}
-  ,changedAttributes: function (diff) {}
+
+  ,get: function () {}
+  ,set: function () {}
+  ,escape: function (attr) {}
+  ,has: function () {}
+  ,unset: function () {}
+
+  
+  
   ,clear: function (options) {}
   ,clone: function () {}
   ,destroy: function () {}
   ,dirty: function (attr) {}
-  ,escape: function (attr) {}
+  
   ,existed: function () {}
   ,fetch: function (options) {}
-  ,get: function () {}
-  ,has: function () {}
-  ,hasChanged: function (attr) {}
+  
+  
+  
   ,increment: function (attr, qty) {}
   ,initialize: function () {}
+
+  /* backbone */
   ,isNew: function () {}
   ,isValid: function () {}
   ,op: function (attr) {}
-  ,previous: function (attr) {}
-  ,previousAttributes: function () {}
+  
   ,relation: function () {}
   ,remove: function (attr, item) {}
   ,save: function () {}
-  ,set: function () {}
-  ,unset: function () {}
+  
+  
   ,setACL: function (acl, options) {}
   ,toJSON: function () {}
   ,validate: function () {}
+
+  /* backbone */
+  ,change: function (options) {}
+  /* backbone */
+  ,hasChanged: function (attr) {}
+  /* backbone */
+  ,changedAttributes: function (diff) {}
+
+  /* backbone */
+  ,previous: function (attr) {}
+  /* backbone */
+  ,previousAttributes: function () {}
 }
 
 
@@ -42,7 +62,7 @@ Obj.prototype = {
  * Static Methods 
  *
  */
-Obj.extend = function (className, protoProps, classProps) {
+Obj.create = function (className, protoProps, classProps) {
   
   // Handle the case with only two args.
   if (!(typeof className == 'string')) {

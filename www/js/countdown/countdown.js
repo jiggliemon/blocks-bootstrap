@@ -35,7 +35,7 @@ function remove (arr, from, to) {
 
 function removeLatched(type){
   var _latched = make(this,_LATCHED_, {})
-  if ( type.indexOf(':') ) {
+  if ( type.indexOf(':') !== -1) {
     if ( REGEX.test(type) ) {
       type = type.replace(REGEX,'')
       _latched[type] = 1
@@ -128,7 +128,7 @@ var mixin = {
     var _events = make(self, _EVENTS_, {})
     var events = make(_events, type, [])
     var i = events.indexOf(callback)
-    if (i) {
+    if (i !== -1) {
       events = remove(events,i)
     }
     return self
@@ -701,9 +701,10 @@ var mixin = {
     var container = self.getContainer()
 
     blank.innerHTML = self.compile(self._context, self)
-    
-    while ( blank.children.length ) {
-      container.appendChild(blank.children[0])
+    container.innerHTML = ""
+
+    while ( blank.childNodes.length ) {
+      container.appendChild(blank.childNodes[0])
     }
   }
   
@@ -869,8 +870,8 @@ var mixin = {
     self.bindElements(clone)
     self.attachEvents && self.attachEvents.call(this)
 
-    while ( clone.children.length ) {
-      frag.appendChild(clone.children[0])
+    while ( clone.childNodes.length ) {
+      frag.appendChild(clone.childNodes[0])
     }
 
     self.bindChildren()
@@ -886,10 +887,14 @@ var mixin = {
    *
    *
    */ 
-  ,toElement: function toElement () {
+  ,toElement: function toElement (forceRedraw) {
     var frag = document.createDocumentFragment()
     var placeholder
     var self = this
+
+    if (forceRedraw) {
+      this.redraw()
+    }
 
     if ( self.ready ) {
       self.fillContainer(frag)
@@ -903,12 +908,18 @@ var mixin = {
     return frag
   }
 
-  ,inject: function (where) {
+  ,inject: function (where, forceRedraw) {
     if (typeof where === 'string') {
       where = document.getElementById(where)
     }
-    where.appendChild(this.toElement())
+    where.appendChild(this.toElement(forceRedraw))
     return this
+  }
+
+  ,redraw: function () {
+    var self = this
+    self.bindTemplate()
+    self.fillContainer()
   }
 }
 
@@ -1199,314 +1210,7 @@ module.exports = TemplateMixin
 
 });
 
-/**
- * @license RequireJS text 2.0.3 Copyright (c) 2010-2012, The Dojo Foundation All Rights Reserved.
- * Available via the MIT or new BSD license.
- * see: http://github.com/requirejs/text for details
- */
-/*jslint regexp: true */
-/*global require: false, XMLHttpRequest: false, ActiveXObject: false,
-  define: false, window: false, process: false, Packages: false,
-  java: false, location: false */
-
-define('text',['module'], function (module) {
-    
-
-    var text, fs,
-        progIds = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'],
-        xmlRegExp = /^\s*<\?xml(\s)+version=[\'\"](\d)*.(\d)*[\'\"](\s)*\?>/im,
-        bodyRegExp = /<body[^>]*>\s*([\s\S]+)\s*<\/body>/im,
-        hasLocation = typeof location !== 'undefined' && location.href,
-        defaultProtocol = hasLocation && location.protocol && location.protocol.replace(/\:/, ''),
-        defaultHostName = hasLocation && location.hostname,
-        defaultPort = hasLocation && (location.port || undefined),
-        buildMap = [],
-        masterConfig = (module.config && module.config()) || {};
-
-    text = {
-        version: '2.0.3',
-
-        strip: function (content) {
-            //Strips <?xml ...?> declarations so that external SVG and XML
-            //documents can be added to a document without worry. Also, if the string
-            //is an HTML document, only the part inside the body tag is returned.
-            if (content) {
-                content = content.replace(xmlRegExp, "");
-                var matches = content.match(bodyRegExp);
-                if (matches) {
-                    content = matches[1];
-                }
-            } else {
-                content = "";
-            }
-            return content;
-        },
-
-        jsEscape: function (content) {
-            return content.replace(/(['\\])/g, '\\$1')
-                .replace(/[\f]/g, "\\f")
-                .replace(/[\b]/g, "\\b")
-                .replace(/[\n]/g, "\\n")
-                .replace(/[\t]/g, "\\t")
-                .replace(/[\r]/g, "\\r")
-                .replace(/[\u2028]/g, "\\u2028")
-                .replace(/[\u2029]/g, "\\u2029");
-        },
-
-        createXhr: masterConfig.createXhr || function () {
-            //Would love to dump the ActiveX crap in here. Need IE 6 to die first.
-            var xhr, i, progId;
-            if (typeof XMLHttpRequest !== "undefined") {
-                return new XMLHttpRequest();
-            } else if (typeof ActiveXObject !== "undefined") {
-                for (i = 0; i < 3; i += 1) {
-                    progId = progIds[i];
-                    try {
-                        xhr = new ActiveXObject(progId);
-                    } catch (e) {}
-
-                    if (xhr) {
-                        progIds = [progId];  // so faster next time
-                        break;
-                    }
-                }
-            }
-
-            return xhr;
-        },
-
-        /**
-         * Parses a resource name into its component parts. Resource names
-         * look like: module/name.ext!strip, where the !strip part is
-         * optional.
-         * @param {String} name the resource name
-         * @returns {Object} with properties "moduleName", "ext" and "strip"
-         * where strip is a boolean.
-         */
-        parseName: function (name) {
-            var strip = false, index = name.indexOf("."),
-                modName = name.substring(0, index),
-                ext = name.substring(index + 1, name.length);
-
-            index = ext.indexOf("!");
-            if (index !== -1) {
-                //Pull off the strip arg.
-                strip = ext.substring(index + 1, ext.length);
-                strip = strip === "strip";
-                ext = ext.substring(0, index);
-            }
-
-            return {
-                moduleName: modName,
-                ext: ext,
-                strip: strip
-            };
-        },
-
-        xdRegExp: /^((\w+)\:)?\/\/([^\/\\]+)/,
-
-        /**
-         * Is an URL on another domain. Only works for browser use, returns
-         * false in non-browser environments. Only used to know if an
-         * optimized .js version of a text resource should be loaded
-         * instead.
-         * @param {String} url
-         * @returns Boolean
-         */
-        useXhr: function (url, protocol, hostname, port) {
-            var uProtocol, uHostName, uPort,
-                match = text.xdRegExp.exec(url);
-            if (!match) {
-                return true;
-            }
-            uProtocol = match[2];
-            uHostName = match[3];
-
-            uHostName = uHostName.split(':');
-            uPort = uHostName[1];
-            uHostName = uHostName[0];
-
-            return (!uProtocol || uProtocol === protocol) &&
-                   (!uHostName || uHostName.toLowerCase() === hostname.toLowerCase()) &&
-                   ((!uPort && !uHostName) || uPort === port);
-        },
-
-        finishLoad: function (name, strip, content, onLoad) {
-            content = strip ? text.strip(content) : content;
-            if (masterConfig.isBuild) {
-                buildMap[name] = content;
-            }
-            onLoad(content);
-        },
-
-        load: function (name, req, onLoad, config) {
-            //Name has format: some.module.filext!strip
-            //The strip part is optional.
-            //if strip is present, then that means only get the string contents
-            //inside a body tag in an HTML string. For XML/SVG content it means
-            //removing the <?xml ...?> declarations so the content can be inserted
-            //into the current doc without problems.
-
-            // Do not bother with the work if a build and text will
-            // not be inlined.
-            if (config.isBuild && !config.inlineText) {
-                onLoad();
-                return;
-            }
-
-            masterConfig.isBuild = config.isBuild;
-
-            var parsed = text.parseName(name),
-                nonStripName = parsed.moduleName + '.' + parsed.ext,
-                url = req.toUrl(nonStripName),
-                useXhr = (masterConfig.useXhr) ||
-                         text.useXhr;
-
-            //Load the text. Use XHR if possible and in a browser.
-            if (!hasLocation || useXhr(url, defaultProtocol, defaultHostName, defaultPort)) {
-                text.get(url, function (content) {
-                    text.finishLoad(name, parsed.strip, content, onLoad);
-                }, function (err) {
-                    if (onLoad.error) {
-                        onLoad.error(err);
-                    }
-                });
-            } else {
-                //Need to fetch the resource across domains. Assume
-                //the resource has been optimized into a JS module. Fetch
-                //by the module name + extension, but do not include the
-                //!strip part to avoid file system issues.
-                req([nonStripName], function (content) {
-                    text.finishLoad(parsed.moduleName + '.' + parsed.ext,
-                                    parsed.strip, content, onLoad);
-                });
-            }
-        },
-
-        write: function (pluginName, moduleName, write, config) {
-            if (buildMap.hasOwnProperty(moduleName)) {
-                var content = text.jsEscape(buildMap[moduleName]);
-                write.asModule(pluginName + "!" + moduleName,
-                               "define(function () { return '" +
-                                   content +
-                               "';});\n");
-            }
-        },
-
-        writeFile: function (pluginName, moduleName, req, write, config) {
-            var parsed = text.parseName(moduleName),
-                nonStripName = parsed.moduleName + '.' + parsed.ext,
-                //Use a '.js' file name so that it indicates it is a
-                //script that can be loaded across domains.
-                fileName = req.toUrl(parsed.moduleName + '.' +
-                                     parsed.ext) + '.js';
-
-            //Leverage own load() method to load plugin value, but only
-            //write out values that do not have the strip argument,
-            //to avoid any potential issues with ! in file names.
-            text.load(nonStripName, req, function (value) {
-                //Use own write() method to construct full module value.
-                //But need to create shell that translates writeFile's
-                //write() to the right interface.
-                var textWrite = function (contents) {
-                    return write(fileName, contents);
-                };
-                textWrite.asModule = function (moduleName, contents) {
-                    return write.asModule(moduleName, fileName, contents);
-                };
-
-                text.write(pluginName, nonStripName, textWrite, config);
-            }, config);
-        }
-    };
-
-    if (masterConfig.env === 'node' || (!masterConfig.env &&
-            typeof process !== "undefined" &&
-            process.versions &&
-            !!process.versions.node)) {
-        //Using special require.nodeRequire, something added by r.js.
-        fs = require.nodeRequire('fs');
-
-        text.get = function (url, callback) {
-            var file = fs.readFileSync(url, 'utf8');
-            //Remove BOM (Byte Mark Order) from utf8 files if it is there.
-            if (file.indexOf('\uFEFF') === 0) {
-                file = file.substring(1);
-            }
-            callback(file);
-        };
-    } else if (masterConfig.env === 'xhr' || (!masterConfig.env &&
-            text.createXhr())) {
-        text.get = function (url, callback, errback) {
-            var xhr = text.createXhr();
-            xhr.open('GET', url, true);
-
-            //Allow overrides specified in config
-            if (masterConfig.onXhr) {
-                masterConfig.onXhr(xhr, url);
-            }
-
-            xhr.onreadystatechange = function (evt) {
-                var status, err;
-                //Do not explicitly handle errors, those should be
-                //visible via console output in the browser.
-                if (xhr.readyState === 4) {
-                    status = xhr.status;
-                    if (status > 399 && status < 600) {
-                        //An http 4xx or 5xx error. Signal an error.
-                        err = new Error(url + ' HTTP status: ' + status);
-                        err.xhr = xhr;
-                        errback(err);
-                    } else {
-                        callback(xhr.responseText);
-                    }
-                }
-            };
-            xhr.send(null);
-        };
-    } else if (masterConfig.env === 'rhino' || (!masterConfig.env &&
-            typeof Packages !== 'undefined' && typeof java !== 'undefined')) {
-        //Why Java, why is this so awkward?
-        text.get = function (url, callback) {
-            var stringBuffer, line,
-                encoding = "utf-8",
-                file = new java.io.File(url),
-                lineSeparator = java.lang.System.getProperty("line.separator"),
-                input = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(file), encoding)),
-                content = '';
-            try {
-                stringBuffer = new java.lang.StringBuffer();
-                line = input.readLine();
-
-                // Byte Order Mark (BOM) - The Unicode Standard, version 3.0, page 324
-                // http://www.unicode.org/faq/utf_bom.html
-
-                // Note that when we use utf-8, the BOM should appear as "EF BB BF", but it doesn't due to this bug in the JDK:
-                // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4508058
-                if (line && line.length() && line.charAt(0) === 0xfeff) {
-                    // Eat the BOM, since we've already found the encoding on this file,
-                    // and we plan to concatenating this buffer with others; the BOM should
-                    // only appear at the top of a file.
-                    line = line.substring(1);
-                }
-
-                stringBuffer.append(line);
-
-                while ((line = input.readLine()) !== null) {
-                    stringBuffer.append(lineSeparator);
-                    stringBuffer.append(line);
-                }
-                //Make sure we return a JavaScript string and not a Java string.
-                content = String(stringBuffer.toString()); //String
-            } finally {
-                input.close();
-            }
-            callback(content);
-        };
-    }
-
-    return text;
-});
+define('text',{load: function(id){throw new Error("Dynamic load not allowed: " + id);}});
 define('text!blocks/block/styles.css',[],function () { return 'b[name] {\n  display: block;\n  font-weight: normal;\n}';});
 
 define('blocks/block/index',['require','exports','module','../main','./mixin','yate/mixin','yeah/mixin','yaul/hasOwn','yaul/forEach','yaul/slice','yaul/isArray','yaul/make','yaul/typeOf','text!./styles.css'],function (require, exports, module) {
@@ -1641,7 +1345,7 @@ Block.create = function ( defaults, methods ) {
     var self = this
     
     Block.prototype.setOptions.call(self, defaults)
-    
+
     // new Block('name', {
     //   ... options ...
     // }[,{...methods...}])
@@ -1653,11 +1357,12 @@ Block.create = function ( defaults, methods ) {
       self.setOptions(arg2 || {})
       blocks.register(arg1,self)
     } else if (type1 === 'object' || type1 === 'undefined') {
-      self.setOptions(arg2 || {})
+      self.setOptions(arg1 || {})
     }
 
     self.construct && self.construct.call(this, self.options)
     self.initialize(self.options)
+
   }
 
   constructor.prototype = extend(methods || {}, Block.prototype)
@@ -1772,3 +1477,286 @@ module.exports = Template
 });
 
 define('yate', ['yate/index'], function (main) { return main; });
+
+define('countdown/models/countdown',['require','exports','module','yeah/mixin','yaul/extend','yaul/typeOf'],function (require, exports, module) {
+var EventsMixin = require('yeah/mixin')
+var extend = require('yaul/extend')
+var typeOf = require('yaul/typeOf')
+
+function keys (obj) {
+  var arr = []
+  for (var key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      arr.push(key)
+    }  
+  }
+  return arr
+}
+
+function getNow () {
+  var date = new Date()
+  date.setMilliseconds(0)
+  return date
+}
+
+function getOffsetDate (date, offset) {
+    var d = typeof date === 'string' ? new Date(date) : new Date(date.getTime())
+    // var remoteOffset = offset * 3600000
+     // var localOffset = offset + d.getTimezoneOffset()/60
+     // d.setHours(d.getHours() + localOffset)
+     // console.log(d.getHours())
+    return d
+}
+
+// Thinking about making this fancier.
+function obliterateDelta (seconds) {
+  var secondsPer = {
+       days:86400
+      ,hours:3600
+      ,minutes: 60
+      ,seconds:1
+    }
+    ,outputDog = {days:0,hours:0,minutes:0,seconds:0}
+
+  function extractSection ( numSecs,key ) {
+    var amount = 0
+
+    if (numSecs > 0) {
+      amount = Math.floor( seconds / secondsPer[key] );
+      seconds -= amount * secondsPer[key];
+
+    }
+    return amount;
+  }
+  
+  for (var key in outputDog) {
+    if (outputDog.hasOwnProperty(key)){
+      outputDog[key] = extractSection(seconds, key)
+    }
+  }
+  
+  return outputDog
+}
+
+
+function Countdown(date) {
+  var self = this
+  if ( !(self instanceof Countdown)) {
+    return new Countdown(date)
+  }
+  self.construct.call(self,date)
+}
+
+
+Countdown.prototype = extend({
+  construct: function (options) {
+    options = options || {}
+    var self = this
+    var date = self.date = options.date
+    var offset = self.offset = options.offset || 0
+
+    var type = typeOf(date)
+
+    if (type == 'string') {
+      date = self.date = getOffsetDate(date, offset)
+      if (date == "Invalid Date") {
+        throw new Error('Invalid `Date` format provided')
+      }
+    }
+
+    self.time = self.getDelta('map')
+    self.keys = keys(self.time)
+    if (self.isDone()){
+      self.fireEvent('time:ended:latched')
+    } else {
+      self.start()  
+    }
+    
+  },
+
+  isDone: function () {
+    var self = this
+    var i = self.keys.length
+    var delta = self.getDelta('map')
+    var key, el, parent, latch = 0, val
+    while (i--) {
+      key = self.keys[i]
+      val = delta[key]
+      if (val > latch) {
+        latch = val
+      }
+    }
+    return (!latch)
+  },
+  // This method feels like it should be using
+  // some recursive check for the incrimentation
+  tick: function () {
+    var self = this
+    var delta = self.getDelta('map')
+    var i = self.keys.length
+    var key, el, parent, latch = 0, val
+    while (i--) {
+      key = self.keys[i]
+      val = delta[key]
+      if (self.time[key] !== val) {
+        self.fireEvent('time:changed',key,delta[key])
+      }
+    }
+    this.time = delta
+    if (this.isDone()) {
+      this.stop()
+      self.fireEvent('time:ended:latched')
+    }
+  },
+  
+  getDelta: function (what) {
+    var self = this
+    switch (what) {
+      case undefined:
+        var now = getNow()
+        var milisecondTime = self.date.getTime() - now.getTime()
+        var hourDifference = self.offset + (now.getTimezoneOffset()/60) 
+        var milisecondOffset = hourDifference * 3600000 
+        var delta = ( milisecondTime - milisecondOffset)
+        return Math.floor(delta/1000)
+        break;
+        
+      case 'map':
+        var time = obliterateDelta(self.getDelta())
+        return time
+        break;
+        
+      default:
+        return self.time[what] 
+    }
+  },
+  
+  stop: function () {
+    clearInterval(this.interval)
+    this.fireEvent('time:stopped')
+  },
+
+  start: function () {
+    var self = this
+    var ticker = function () {
+      self.tick()
+    }
+
+    self.interval = setInterval(ticker, 1000)
+    self.fireEvent('time:started')
+  }
+}, EventsMixin)
+
+Countdown.pad = function zeroPad ( number, width ) {
+  width -= number.toString().length;
+  return String( (width > 0) ? new Array(width +(/\./.test(number)?2:1)).join('0') + number : number );
+}
+
+
+module.exports = Countdown
+});
+
+define('text!countdown/themes/timebomb/markup.tmpl',[],function () { return '<%/*\n\ncontext variables: \n  pad {function} ex: pad( 3, 3) "003"\n\n*/%>\n<div class="countdown-wrapper timebomb-wrapper">\n  <div class="countdown-inner clearfix">\n\n  <div class="digit-wrapper days-wrapper">\n    <div class="days-inner">\n      <label for="days"><b>Days</b></label>\n      <div bind="days"><%= pad(this.getDelta(\'days\'), 3)%></div>\n    </div>\n  </div>\n\n  <div class="seperator-wrapper day-hour-seperator">\n    <div class="seperator-inner">\n      <div class="seperator"><b>:</b></div>\n    </div>\n  </div>\n    \n  <div class="digit-wrapper hours-wrapper">\n    <div class="hours-inner">\n      <label for="hours"><b>Hours</b></label>\n      <div bind="hours"><%=pad(this.getDelta(\'hours\'),2)%></div>\n    </div>\n  </div>\n\n  <div class="seperator-wrapper hour-minute-seperator">\n    <div class="seperator-inner">\n      <div class="seperator"><b>:</b></div>\n    </div>\n  </div>\n\n  <div class="digit-wrapper minutes-wrapper">\n    <div class="minutes-inner">\n      <label for="minutes"><b>Minutes</b></label>\n      <div bind="minutes"><%=pad(this.getDelta(\'minutes\'),2)%></div>\n    </div>\n  </div>\n\n  <div class="seperator-wrapper minute-second-seperator">\n    <div class="seperator-inner">\n      <div class="seperator"><b>:</b></div>\n    </div>\n  </div>\n\n  <div class="digit-wrapper seconds-wrapper">\n    <div class="seconds-inner">\n      <label for="seconds"><b>Seconds</b></label>\n      <div bind="seconds"><%=pad(this.getDelta(\'seconds\'),2)%></div>\n    </div>\n  </div>\n\n  </div>\n</div>\n';});
+
+define('text!countdown/themes/timebomb/styles.css',[],function () { return '@font-face {\n    font-family: \'digital\';\n    src: url(\'//agroism.s3.amazonaws.com/Demos/countdown/src/assets/digital/digital-mono-webfont.eot\');\n    src: url(\'//agroism.s3.amazonaws.com/Demos/countdown/src/assets/digital/digital-mono-webfont.eot?#iefix\') format(\'embedded-opentype\'),\n         url(\'//agroism.s3.amazonaws.com/Demos/countdown/src/assets/digital/digital-mono-webfont.woff\') format(\'woff\'),\n         url(\'//agroism.s3.amazonaws.com/Demos/countdown/src/assets/digital/digital-mono-webfont.ttf\') format(\'truetype\'),\n         url(\'//agroism.s3.amazonaws.com/Demos/countdown/src/assets/digital/digital-mono-webfont.svg#digital\') format(\'svg\');\n    font-weight: normal;\n    font-style: normal;\n}\n\n.timebomb-wrapper {\n  padding: 10px;\n  width: 350px;\n  margin: 0 auto;\n  color: yellow;\n  font: 60px/60px \'digital\';\n  text-shadow: 0 0 5px rgba(255,255,255, .3);\n  text-align: center;\n  border-radius: 5px;\n  border: 1px #ddd solid;\n  border-color: #eee #aaa #777 #ddd;\n  box-shadow: 0px 1px 2px rgba(0,0,0,.3);\n  background: #cecece; /* Old browsers */\n  background: -moz-linear-gradient(top, #cecece 39%, #afafaf 100%); /* FF3.6+ */\n  background: -webkit-gradient(linear, left top, left bottom, color-stop(39%,#cecece), color-stop(100%,#afafaf)); /* Chrome,Safari4+ */\n  background: -webkit-linear-gradient(top, #cecece 39%,#afafaf 100%); /* Chrome10+,Safari5.1+ */\n  background: -o-linear-gradient(top, #cecece 39%,#afafaf 100%); /* Opera 11.10+ */\n  background: -ms-linear-gradient(top, #cecece 39%,#afafaf 100%); /* IE10+ */\n  background: linear-gradient(to bottom, #cecece 39%,#afafaf 100%); /* W3C */\n  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=\'#cecece\', endColorstr=\'#afafaf\',GradientType=0 ); /* IE6-9 */\n}\n\n.timebomb-wrapper .countdown-inner {\n  padding: 0 10px;\n  background: #222;\n  border-radius: 3px;\n  border: 1px #ccc solid;\n  border-color: #888 #ddd #eee #ccc;\n}\n\n.timebomb-wrapper .digit-wrapper {\n  display: inline-block;\n}\n.timebomb-wrapper .digit-wrapper .digit-inner {}\n\n.timebomb-wrapper .seperator-wrapper,\n.timebomb-wrapper .digit-wrapper {\n  display: block;\n  float: left;\n}\n.timebomb-wrapper .digit-wrapper label {display: none;}\n.timebomb-wrapper .digit-wrapper span,\n.timebomb-wrapper .seperator-wrapper span {\n  display: inline-block;\n  float: left;\n}\n\n.timebomb-wrapper .days-wrapper {}\n.timebomb-wrapper .hours-wrapper {}\n.timebomb-wrapper .minutes-wrapper {}\n.timebomb-wrapper .seconds-wrapper {}\n\n.timebomb-wrapper .seperator-wrapper {\n  display: inline-block;\n  vertical-align: top;\n}\n.timebomb-wrapper .seperator-wrapper .seperator-inner {}\n.timebomb-wrapper .seperator-wrapper .seperator {}\n\n.small .timebomb-wrapper {\n  width:257px;\n  font:42px/42px \'digital\';\n}\n.large .timebomb-wrapper {\n  width:450px;\n  font:77px/77px \'digital\';\n}\n.top .timebomb-wrapper,\n.bottom .timebomb-wrapper {\n  width:766px;\n  font: 135px/105px \'digital\';\n}';});
+
+define('countdown/themes/timebomb',['require','exports','module','text!./timebomb/markup.tmpl','text!./timebomb/styles.css'],function (require, exports, module) {
+var tmpl = require('text!./timebomb/markup.tmpl')
+var styles = require('text!./timebomb/styles.css')
+
+module.exports = {
+   template: tmpl
+  ,styles: styles
+  ,preview: '//agroism.s3.amazonaws.com/Demos/countdown/src/themes/timebomb/timebomb.png'
+}
+});
+
+define('text!countdown/themes/plain/markup.tmpl',[],function () { return '<%/*\n\ncontext variables: \n  pad {function} ex: pad( 3, 3) "003"\n\n*/%>\n<span class="countdown-wrapper plain-wrapper">\n  <span class="countdown-inner clearfix">\n\n  <span class="digit-wrapper days-wrapper">\n    <span class="days-inner">\n      <span bind="days"><%= this.getDelta(\'days\') %></span>\n      <label for="days"><b>Days</b></label>\n    </span>\n  </span>\n\n  <span class="seperator-wrapper day-hour-seperator">\n    <span class="seperator-inner">\n      <span class="seperator"><b>,</b></span>\n    </span>\n  </span>\n    \n  <span class="digit-wrapper hours-wrapper">\n    <span class="hours-inner">\n      <span bind="hours"><%= this.getDelta(\'hours\') %></span>\n      <label for="hours"><b>Hours</b></label>\n    </span>\n  </span>\n\n  <span class="seperator-wrapper hour-minute-seperator">\n    <span class="seperator-inner">\n      <span class="seperator"><b>,</b></span>\n    </span>\n  </span>\n\n  <span class="digit-wrapper minutes-wrapper">\n    <span class="minutes-inner">\n      <span bind="minutes"><%= this.getDelta(\'minutes\') %></span>\n      <label for="minutes"><b>Minutes</b></label>\n    </span>\n  </span>\n\n  <span class="seperator-wrapper minute-second-seperator">\n    <span class="seperator-inner">\n      <span class="seperator"><b>,</b></span>\n    </span>\n  </span>\n\n  <span class="digit-wrapper seconds-wrapper">\n    <span class="seconds-inner">\n      <span bind="seconds"><%= this.getDelta(\'seconds\') %></span>\n      <label for="seconds"><b>Seconds</b></label>\n    </span>\n  </span>\n\n  </span>\n</span>\n';});
+
+define('text!countdown/themes/plain/styles.css',[],function () { return '';});
+
+define('countdown/themes/plain',['require','exports','module','text!./plain/markup.tmpl','text!./plain/styles.css'],function (require, exports, module) {
+var tmpl = require('text!./plain/markup.tmpl')
+var styles = require('text!./plain/styles.css')
+
+module.exports = {
+   template: tmpl
+  ,styles: styles
+  ,preview: '//agroism.s3.amazonaws.com/Demos/countdown/src/themes/plain/thumb.png'
+}
+});
+
+define('countdown/main',['require','exports','module','blocks/block','./models/countdown','./themes/timebomb','./themes/plain'],function (require, exports, module) {
+var block = require('blocks/block')
+var CountdownModel = require('./models/countdown')
+//var CountdownTemplate = require('text!./tmpl/countdown.tmpl')
+//var styles = require('text!./styles/countdown.css')
+var timebomb = require('./themes/timebomb')
+var plain = require('./themes/plain')
+
+var themes = {
+  "timebomb": timebomb 
+  ,"plain": plain
+}
+
+function loadCss(styles) {
+    var style = document.createElement("style");
+    style.innerHTML = styles
+    document.getElementsByTagName("head")[0].appendChild(style);
+}
+
+var CountdownBlock = block.create({
+   theme: "timebomb"
+  ,context: {
+    pad: CountdownModel.pad
+  }
+  ,date: "12/25/2012"
+  ,offset: -6
+}, {
+  construct: function (options) {
+    var self = this
+    self.setOptions(options || {})
+
+    if (!self.options.template) {
+      self.setTheme(self.options.theme)
+    }
+
+    self.model = new CountdownModel({
+       date: self.options.date
+      ,offset: parseFloat(self.options.offset, 10)
+    })
+
+    self.model.addEvent('time:changed', function (key, time) {
+      var el = self.bound(key)
+      if (el) {
+        el.innerHTML = CountdownModel.pad(time, 2)
+      }
+      self.fireEvent('time:changed',key,time)
+    })
+    self.model.addEvent('time:ended', function () {
+      self.fireEvent('time:ended:latched')
+    })
+  }
+
+  ,getDelta: function (what) {
+    return this.model.getDelta(what)
+  }
+  
+  ,setTheme: function (theme) {
+    var self = this
+    if (themes[theme]) {
+      self.options.template = themes[theme].template
+      if (!themes[theme].loaded) {
+        loadCss(themes[theme].styles)
+        themes[theme].loaded = true
+      }
+    }
+  }
+
+})
+
+  
+module.exports = CountdownBlock
+});
+
+define('countdown', ['countdown/main'], function (main) { return main; });

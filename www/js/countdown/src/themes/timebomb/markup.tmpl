@@ -4,55 +4,54 @@ context variables:
   pad {function} ex: pad( 3, 3) "003"
 
 */%>
-<div class="countdown-wrapper">
-  <div class="countdown-inner">
-  
-  <% if (this.getDelta('days')) { %>
+<div class="countdown-wrapper timebomb-wrapper">
+  <div class="countdown-inner clearfix">
+
   <div class="digit-wrapper days-wrapper">
     <div class="days-inner">
       <label for="days"><b>Days</b></label>
-      <span bind="days"><%= pad(this.getDelta('days'), 3)%></span>
+      <div bind="days"><%= pad(this.getDelta('days'), 3)%></div>
     </div>
   </div>
 
   <div class="seperator-wrapper day-hour-seperator">
     <div class="seperator-inner">
-      <span class="seperator"><b>:</b></span>
+      <div class="seperator"><b>:</b></div>
     </div>
   </div>
-  <% } %>
     
   <div class="digit-wrapper hours-wrapper">
     <div class="hours-inner">
       <label for="hours"><b>Hours</b></label>
-      <span bind="hours"><%=pad(this.getDelta('hours'),2)%></span>
+      <div bind="hours"><%=pad(this.getDelta('hours'),2)%></div>
     </div>
   </div>
 
   <div class="seperator-wrapper hour-minute-seperator">
     <div class="seperator-inner">
-      <span class="seperator"><b>:</b></span>
+      <div class="seperator"><b>:</b></div>
     </div>
   </div>
 
   <div class="digit-wrapper minutes-wrapper">
     <div class="minutes-inner">
       <label for="minutes"><b>Minutes</b></label>
-      <span bind="minutes"><%=pad(this.getDelta('minutes'),2)%></span>
+      <div bind="minutes"><%=pad(this.getDelta('minutes'),2)%></div>
     </div>
   </div>
 
   <div class="seperator-wrapper minute-second-seperator">
     <div class="seperator-inner">
-      <span class="seperator"><b>:</b></span>
+      <div class="seperator"><b>:</b></div>
     </div>
   </div>
 
   <div class="digit-wrapper seconds-wrapper">
     <div class="seconds-inner">
       <label for="seconds"><b>Seconds</b></label>
-      <span bind="seconds"><%=pad(this.getDelta('seconds'),2)%></span>
+      <div bind="seconds"><%=pad(this.getDelta('seconds'),2)%></div>
     </div>
   </div>
+
   </div>
 </div>

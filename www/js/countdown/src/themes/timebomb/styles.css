@@ -1,0 +1,83 @@
+@font-face {
+    font-family: 'digital';
+    src: url('//agroism.s3.amazonaws.com/Demos/countdown/src/assets/digital/digital-mono-webfont.eot');
+    src: url('//agroism.s3.amazonaws.com/Demos/countdown/src/assets/digital/digital-mono-webfont.eot?#iefix') format('embedded-opentype'),
+         url('//agroism.s3.amazonaws.com/Demos/countdown/src/assets/digital/digital-mono-webfont.woff') format('woff'),
+         url('//agroism.s3.amazonaws.com/Demos/countdown/src/assets/digital/digital-mono-webfont.ttf') format('truetype'),
+         url('//agroism.s3.amazonaws.com/Demos/countdown/src/assets/digital/digital-mono-webfont.svg#digital') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.timebomb-wrapper {
+  padding: 10px;
+  width: 350px;
+  margin: 0 auto;
+  color: yellow;
+  font: 60px/60px 'digital';
+  text-shadow: 0 0 5px rgba(255,255,255, .3);
+  text-align: center;
+  border-radius: 5px;
+  border: 1px #ddd solid;
+  border-color: #eee #aaa #777 #ddd;
+  box-shadow: 0px 1px 2px rgba(0,0,0,.3);
+  background: #cecece; /* Old browsers */
+  background: -moz-linear-gradient(top, #cecece 39%, #afafaf 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(39%,#cecece), color-stop(100%,#afafaf)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #cecece 39%,#afafaf 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, #cecece 39%,#afafaf 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, #cecece 39%,#afafaf 100%); /* IE10+ */
+  background: linear-gradient(to bottom, #cecece 39%,#afafaf 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cecece', endColorstr='#afafaf',GradientType=0 ); /* IE6-9 */
+}
+
+.timebomb-wrapper .countdown-inner {
+  padding: 0 10px;
+  background: #222;
+  border-radius: 3px;
+  border: 1px #ccc solid;
+  border-color: #888 #ddd #eee #ccc;
+}
+
+.timebomb-wrapper .digit-wrapper {
+  display: inline-block;
+}
+.timebomb-wrapper .digit-wrapper .digit-inner {}
+
+.timebomb-wrapper .seperator-wrapper,
+.timebomb-wrapper .digit-wrapper {
+  display: block;
+  float: left;
+}
+.timebomb-wrapper .digit-wrapper label {display: none;}
+.timebomb-wrapper .digit-wrapper span,
+.timebomb-wrapper .seperator-wrapper span {
+  display: inline-block;
+  float: left;
+}
+
+.timebomb-wrapper .days-wrapper {}
+.timebomb-wrapper .hours-wrapper {}
+.timebomb-wrapper .minutes-wrapper {}
+.timebomb-wrapper .seconds-wrapper {}
+
+.timebomb-wrapper .seperator-wrapper {
+  display: inline-block;
+  vertical-align: top;
+}
+.timebomb-wrapper .seperator-wrapper .seperator-inner {}
+.timebomb-wrapper .seperator-wrapper .seperator {}
+
+.small .timebomb-wrapper {
+  width:257px;
+  font:42px/42px 'digital';
+}
+.large .timebomb-wrapper {
+  width:450px;
+  font:77px/77px 'digital';
+}
+.top .timebomb-wrapper,
+.bottom .timebomb-wrapper {
+  width:766px;
+  font: 135px/105px 'digital';
+}

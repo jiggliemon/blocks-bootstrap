@@ -40,9 +40,9 @@ var left = block.create({
    template:tmpl
   ,events: {
     'menu-list': {
-      click: function (e) {
+      click: function (e, self) {
         var target = e.target || e.srcElement
-        var menuList = this.bound('menu-list')
+        var menuList = self.bound('menu-list')
 
         /**
          *  remove the active state from all

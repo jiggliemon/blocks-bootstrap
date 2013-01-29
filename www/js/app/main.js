@@ -15,13 +15,19 @@ var tmpl = require('text!./layouts/2-col-left.tmpl')
 var header = require('./header/index')
 var Left = require('./left/index')
 var Todo = require('todo')
+var Countdown = require('countdown')
+
+var counter = new Countdown({
+   date:'12/25/2013 13:00'
+  ,offset: -6
+})
 
 var page = new block('page', {
    template:tmpl
   ,children: {
      header: new header('header')
-    ,left: [new Left, new Todo('left-todo')]
-    ,content: new Todo('content-todo')
+    ,left: [new Left]
+    ,content: [new Todo('content-todo'), counter]
   }
 })
 

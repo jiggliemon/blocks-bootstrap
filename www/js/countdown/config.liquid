@@ -1,0 +1,230 @@
+<style>
+.ui-slider { position: relative; text-align: left; }
+.ui-slider .ui-slider-handle { position: absolute; z-index: 2; width: 1.2em; height: 1.2em; cursor: default; }
+.ui-slider .ui-slider-range { position: absolute; z-index: 1; font-size: .7em; display: block; border: 0; background-position: 0 0; }
+
+.ui-slider-horizontal { height: .8em; border: 1px #ccc solid; border-radius: 2px;  }
+.ui-slider-horizontal .ui-slider-handle { top: -.3em; margin-left: -.6em; background-color: #fff; border-radius: 2px; }
+.ui-slider-horizontal .ui-slider-handle.ui-state-active {box-shadow: 1px 1px 2px rgba(0,0,0,.5); }
+.ui-slider-horizontal .ui-slider-range { top: 0; height: 100%; }
+.ui-slider-horizontal .ui-slider-range-min { left: 0; }
+.ui-slider-horizontal .ui-slider-range-max { right: 0; }
+
+.ui-slider-vertical { width: .8em; height: 100px; }
+.ui-slider-vertical .ui-slider-handle { left: -.3em; margin-left: 0; margin-bottom: -.6em; }
+.ui-slider-vertical .ui-slider-range { left: 0; width: 100%; }
+.ui-slider-vertical .ui-slider-range-min { bottom: 0; }
+.ui-slider-vertical .ui-slider-range-max { top: 0; }
+
+.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+.ui-timepicker-div dl { text-align: left; }
+.ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
+.ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
+.ui-timepicker-div td { font-size: 90%; }
+.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0}
+
+.ui-timepicker-rtl{ direction: rtl; }
+.ui-timepicker-rtl dl { text-align: right; }
+.ui-timepicker-rtl dl dd { margin: 0 65px 10px 10px; }
+
+.field {}
+.field.field-theme {}
+.field.field-theme .theme {float: left; width: 133px; margin-left: 10px;
+-webkit-border-radius: 3px;
+-moz-border-radius: 3px;
+-ms-border-radius: 3px;
+-o-border-radius: 3px;
+border-radius: 3px;
+border: 1px solid white;
+box-shadow: 0 0 3px lightGrey inset, 0 0 1px #7F7F7F;
+-moz-box-shadow: 0 0 3px #D3D3D3 inset, 0 0 1px #7F7F7F;
+-webkit-box-shadow: 0 0 3px lightGrey inset, 0 0 1px #7F7F7F;
+color: #464646;}
+.field.field-theme .theme.first {margin-left: 0px;}
+.field.field-theme .theme .theme-inner {padding: 5px;}
+.field.field-theme .theme h3 {margin-bottom: 0px; font-size: 10px;}
+.field.field-theme .theme label {}
+.field.field-theme .theme input {float: left; margin-top: 7px;}
+.field.field-theme .theme img {}
+
+.field.field-countdown-to {clear: both; float: left; margin-right: 10px;}
+.field.field-countdown-to label {}
+.field.field-countdown-to input { width: 220px;}
+
+.field.field-timezone {float: left;}
+.field.field-timezone label { } 
+.field.field-timezone select { width: 200px;}
+
+.field.field-blastoff-template {clear: both;}
+</style>
+<form id="module-form">
+<div id="tabs">
+  <div id="configure-pane">
+    <div class="field field-theme clearfix">
+      <label>Theme:</label>
+      <div class="theme first">
+        <label class="theme-inner" for="timebomb">
+          <h3>Timebomb</h3>
+          <input type="radio" name="theme" value="timebomb" id="timebomb"/>
+          <img src="//agroism.s3.amazonaws.com/Demos/countdown/src/themes/timebomb/timebomb.png" width="100" />
+        </label>
+      </div>
+      <div class="theme">
+        <label class="theme-inner" for="plain">
+          <h3>Plain</h3>
+          <input type="radio" name="theme" value="plain" id="plain"/>
+          <img src="//agroism.s3.amazonaws.com/Demos/countdown/src/themes/plain/thumb.png" width="100" />
+        </label>
+      </div>
+    </div>
+
+    <div class="field field-countdown-to">
+      <label>Countdown to:
+        <input type="text" name="down_to" id="down_to" />
+      </label>
+    </div>
+
+    <div class="field field-timezone">
+      <label for="offset">Timezone:
+        <select name="offset" id="offset">
+          <option value="-12">(GMT -12:00) Eniwetok, Kwajalein</option>
+          <option value="-11">(GMT -11:00) Midway Island, Samoa</option>
+          <option value="-10">(GMT -10:00) Hawaii</option>
+          <option value="-9">(GMT -9:00) Alaska</option>
+          <option value="-8">(GMT -8:00) Pacific Time (US &amp; Canada)</option>
+          <option value="-7">(GMT -7:00) Mountain Time (US &amp; Canada)</option>
+          <option value="-6" selected="selected">(GMT -6:00) Central Time (US &amp; Canada), Mexico City</option>
+          <option value="-5">(GMT -5:00) Eastern Time (US &amp; Canada), Bogota, Lima</option>
+          <option value="-4">(GMT -4:00) Atlantic Time (Canada), Caracas, La Paz</option>
+          <option value="-3.5">(GMT -3:30) Newfoundland</option>
+          <option value="-3">(GMT -3:00) Brazil, Buenos Aires, Georgetown</option>
+          <option value="-2">(GMT -2:00) Mid-Atlantic</option>
+          <option value="-1">(GMT -1:00 hour) Azores, Cape Verde Islands</option>
+          <option value="0">(GMT) Western Europe Time, London, Lisbon, Casablanca</option>
+          <option value="1">(GMT +1:00 hour) Brussels, Copenhagen, Madrid, Paris</option>
+          <option value="2">(GMT +2:00) Kaliningrad, South Africa</option>
+          <option value="3">(GMT +3:00) Baghdad, Riyadh, Moscow, St. Petersburg</option>
+          <option value="3">(GMT +3:30) Tehran</option>
+          <option value="4">(GMT +4:00) Abu Dhabi, Muscat, Baku, Tbilisi</option>
+          <option value="4.5">(GMT +4:30) Kabul</option>
+          <option value="5">(GMT +5:00) Ekaterinburg, Islamabad, Karachi, Tashkent</option>
+          <option value="5.5">(GMT +5:30) Bombay, Calcutta, Madras, New Delhi</option>
+          <option value="5.75">(GMT +5:45) Kathmandu</option>
+          <option value="6">(GMT +6:00) Almaty, Dhaka, Colombo</option>
+          <option value="7">(GMT +7:00) Bangkok, Hanoi, Jakarta</option>
+          <option value="8">(GMT +8:00) Beijing, Perth, Singapore, Hong Kong</option>
+          <option value="9">(GMT +9:00) Tokyo, Seoul, Osaka, Sapporo, Yakutsk</option>
+          <option value="9.5">(GMT +9:30) Adelaide, Darwin</option>
+          <option value="10">(GMT +10:00) Eastern Australia, Guam, Vladivostok</option>
+          <option value="11">(GMT +11:00) Magadan, Solomon Islands, New Caledonia</option>
+          <option value="12">(GMT +12:00) Auckland, Wellington, Fiji, Kamchatka</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="field field-blastoff-template">
+      <label>Blastoff Template:
+        <textarea name="blastoff_template" id="blastoff_template"></textarea>
+      </label>
+    </div>
+
+    
+  </div>
+</div>
+
+</form>
+
+<!-- These take time to download.  So here we go! -->
+<script src="//agroism.s3.amazonaws.com/Demos/blocks/timepicker.js"></script>
+<script src="//agroism.s3.amazonaws.com/Demos/blocks/almond.js"></script>
+<script src="//agroism.s3.amazonaws.com/Demos/countdown/countdown.js"></script>
+<!-- The following gets executed before the above download -->
+<script>
+(function (data) {
+jQuery(document).ready(function (){
+  MODULE = {
+     form: jQuery('#module-form')
+    ,textareas: {}
+    ,editors: {}
+    ,getFormJSON: function() {
+      var o = {}
+        , a = this.form.serializeArray()
+
+      jQuery.each(a, function(i) {
+        if ( o[this.name] ) {
+          if (!o[this.name].push) {
+            o[this.name] = [o[this.name]]
+          }
+          o[this.name].push(this.value || '')
+        } else {
+          o[this.name] = this.value || ''
+        }
+      })
+      return o
+    }
+  }
+
+  MODULE.data = (data)?data:{}
+
+
+  var textAreas = MODULE.form.find('textarea[id]')
+  var downTo = jQuery('#down_to')
+  var configurePaneTab = jQuery('a[href*="#configure-pane"]')
+  var countdownPaneTab = jQuery('a[href*="#countdown-template-pane"]')
+  
+  function initDateTimePicker () {
+    downTo.datetimepicker({
+      timeFormat: "hh:mm tt"
+    })
+  }
+
+  var interval = setInterval(function () {
+    if (jQuery.prototype.datetimepicker) {
+      clearInterval(interval)
+      initDateTimePicker()
+    }
+  }, 15)
+
+  if (MODULE.data) {
+    MODULE.data.blastoff_template = MODULE.data.blastoff_template || "<h1>BLAST OFF!!!</h1>";
+
+    for ( var key in MODULE.data ) {
+      if ( MODULE.data.hasOwnProperty(key) ) {
+        jQuery('#'+key).val( MODULE.data[key] )
+      }
+    }
+    // Set the theme
+    jQuery('input[name=theme][value='+MODULE.data.theme+']').attr('checked',true)
+  }
+
+  textAreas.each(function (index,textarea){
+    var id = textarea.id 
+    MODULE.textareas[id] = textarea
+    MODULE.editors[id] = CodeMirror.fromTextArea(textarea, {
+       "mode":'htmlmixed'
+      ,"value": MODULE.data[id]
+      ,"tabSize": 2
+      ,"lineNumbers": true
+    })
+  })
+
+  countdownPaneTab.click(function () {
+    setTimeout(MODULE.editors.countdown_template.refresh,15)
+  })
+
+  configurePaneTab.click(function () {
+    setTimeout(MODULE.editors.blastoff_template.refresh,15)
+  })
+
+})
+}({{ module_data }}))
+
+
+function get_v2_snippet_data () {
+  jQuery.each(MODULE.editors, function (i, editor) {
+    editor.save()
+  })
+  
+  return MODULE.getFormJSON()
+}
+</script>

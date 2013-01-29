@@ -1,0 +1,29 @@
+<div id="module-{{wall_module.id}}">
+</div>
+<script src="//agroism.s3.amazonaws.com/Demos/blocks/almond.js"></script>
+<script src="//agroism.s3.amazonaws.com/Demos/countdown/countdown.js"></script>
+<script>
+(function (data) {
+  if (data && data.down_to) {
+    var Countdown = require('countdown');
+    countdowns = window.countdowns || {}
+    var parent = document.getElementById('module-{{wall_module.id}}')
+
+    var countdown = countdowns["{{wall_module.id}}"] = new Countdown({
+       "template": data.countdown_template
+      ,"date": data.down_to
+      ,"offset":data.offset
+      ,"theme":data.theme
+    }).inject(parent)
+
+    var blastOff = document.createElement('div')
+    blastOff.setAttribute('class', 'blastoff-wrapper')
+    blastOff.innerHTML = data.blastoff_template
+
+    countdown.addEvent('time:ended', function () {
+      parent.appendChild(blastOff)
+    })
+  }
+  
+}({{module_data}}))
+</script>

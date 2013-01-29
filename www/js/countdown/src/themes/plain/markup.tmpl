@@ -1,0 +1,57 @@
+<%/*
+
+context variables: 
+  pad {function} ex: pad( 3, 3) "003"
+
+*/%>
+<span class="countdown-wrapper plain-wrapper">
+  <span class="countdown-inner clearfix">
+
+  <span class="digit-wrapper days-wrapper">
+    <span class="days-inner">
+      <span bind="days"><%= this.getDelta('days') %></span>
+      <label for="days"><b>Days</b></label>
+    </span>
+  </span>
+
+  <span class="seperator-wrapper day-hour-seperator">
+    <span class="seperator-inner">
+      <span class="seperator"><b>,</b></span>
+    </span>
+  </span>
+    
+  <span class="digit-wrapper hours-wrapper">
+    <span class="hours-inner">
+      <span bind="hours"><%= this.getDelta('hours') %></span>
+      <label for="hours"><b>Hours</b></label>
+    </span>
+  </span>
+
+  <span class="seperator-wrapper hour-minute-seperator">
+    <span class="seperator-inner">
+      <span class="seperator"><b>,</b></span>
+    </span>
+  </span>
+
+  <span class="digit-wrapper minutes-wrapper">
+    <span class="minutes-inner">
+      <span bind="minutes"><%= this.getDelta('minutes') %></span>
+      <label for="minutes"><b>Minutes</b></label>
+    </span>
+  </span>
+
+  <span class="seperator-wrapper minute-second-seperator">
+    <span class="seperator-inner">
+      <span class="seperator"><b>,</b></span>
+    </span>
+  </span>
+
+  <span class="digit-wrapper seconds-wrapper">
+    <span class="seconds-inner">
+      <span bind="seconds"><%= this.getDelta('seconds') %></span>
+      <label for="seconds"><b>Seconds</b></label>
+    </span>
+  </span>
+
+  </span>
+</span>

@@ -1,0 +1,26 @@
+<div class="task-wrapper" bind="wrapper">
+  <div class="task-inner clearfix">
+
+    <div class="task-check-wrapper span1">
+      <div class="task-check-inner">
+        <% var uId = 'check-' + this.getUniqueId() %>
+        <label for="<%=uId %>" bind="label"><i class="icon-ok"></i></label>
+        <input type="checkbox" name="<%=uId %>" id="<%=uId %>" bind="checkbox" />
+        
+      </div>
+    </div>
+
+    <div class="task-text-wrapper span10">
+      <div class="task-text-inner">
+        <p class="task-text"><%= this.getTask() %></p>
+      </div>
+    </div>
+
+    <div class="action-buttons-wrapper span1">
+      <div class="action-buttons-inner">
+        <button class="btn-small" bind="edit-btn">Edit</button>
+      </div>
+    </div>
+
+  </div>
+</div>
