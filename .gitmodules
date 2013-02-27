@@ -19,3 +19,9 @@
 [submodule "www/js/lodash"]
 	path = www/js/lodash
 	url = https://github.com/bestiejs/lodash.git
+[submodule "www/js/parsed"]
+	path = www/js/parsed
+	url = git@github.com:jiggliemon/parsed.git
+[submodule "www/js/http"]
+	path = www/js/http
+	url = https://github.com/substack/http-browserify.git
