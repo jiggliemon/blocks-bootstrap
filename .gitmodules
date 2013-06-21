@@ -4,9 +4,6 @@
 [submodule "www/js/cajon"]
 	path = www/js/cajon
 	url = https://github.com/requirejs/cajon.git
-[submodule "www/js/yaul"]
-	path = www/js/yaul
-	url = git@github.com:jiggliemon/yaul.git
 [submodule "www/js/yate"]
 	path = www/js/yate
 	url = git@github.com:jiggliemon/yate.git
@@ -25,3 +22,6 @@
 [submodule "www/js/http"]
 	path = www/js/http
 	url = https://github.com/substack/http-browserify.git
+[submodule "www/js/yaul"]
+	path = www/js/yaul
+	url = git@github.com:GCheung55/yaul.git
