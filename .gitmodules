@@ -22,3 +22,6 @@
 [submodule "www/js/http"]
 	path = www/js/http
 	url = https://github.com/substack/http-browserify.git
+[submodule "www/js/yaul"]
+	path = www/js/yaul
+	url = git@github.com:GCheung55/yaul.git
