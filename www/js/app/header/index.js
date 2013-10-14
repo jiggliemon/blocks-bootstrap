@@ -3,7 +3,7 @@ var tmpl = require('text!./tmpl/index.tmpl')
 
 var hasClass = false
 
-var header = block.create({
+var header = block.begets({
   template: tmpl
   ,events: {
     "brand": {

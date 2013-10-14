@@ -36,7 +36,7 @@ function forEach (list, fn) {
   }
 }
 
-var left = block.create({
+var left = block.begets({
    template:tmpl
   ,events: {
     'menu-list': {

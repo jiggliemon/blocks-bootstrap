@@ -14,7 +14,7 @@ var block = require('blocks/block')
 var tmpl = require('text!./layouts/2-col-left.tmpl')
 var header = require('./header/index')
 var Left = require('./left/index')
-var Todo = require('todo')
+//var Todo = require('todo')
 //var Countdown = require('countdown')
 
 // var counter = new Countdown({
@@ -22,18 +22,19 @@ var Todo = require('todo')
 //   ,offset: -6
 // })
 
-var page = new block('page', {
+var page = new block({
    template:tmpl
+  ,name:'page'
   ,children: {
-     header: new header('header')
-    ,left: [new Left]
-    ,content: [new Todo('content-todo')]
+     header: [new header({name: 'header'})]
+    ,left: [new Left({name: 'left'})]
+    //,content: [new Todo('content-todo')]
   }
 })
 
 
 
-
-document.body.appendChild(page.toElement())
+console.log(page)
+document.body.innerHTML = page.toString()
 
 module.exports = page

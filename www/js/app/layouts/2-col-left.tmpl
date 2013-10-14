@@ -3,7 +3,7 @@
 
     <div class="header-wrapper">
       <div class="header-inner">
-        <b name="header"></b>
+        <%=this.getBlock('header') %>
       </div>
     </div>
   
@@ -12,7 +12,7 @@
         <div class="row">
           <aside class="left-wrapper span3">
             <div class="left-inner">
-              <b name="left"></b>
+              <%=this.getBlock('left') %>
             </div>
           </aside>
 
@@ -27,6 +27,7 @@
     <div class="footer-wrapper">
       <div class="footer-inner">
         <b name="footer">
+          <%=this.getBlock('footer') %>
         <!-- Footer block content will be placed here -->
         </b>
       </div>
