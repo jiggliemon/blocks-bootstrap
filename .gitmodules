@@ -4,9 +4,6 @@
 [submodule "www/js/cajon"]
 	path = www/js/cajon
 	url = https://github.com/requirejs/cajon.git
-[submodule "www/js/yaul"]
-	path = www/js/yaul
-	url = git@github.com:jiggliemon/yaul.git
 [submodule "www/js/yate"]
 	path = www/js/yate
 	url = git@github.com:jiggliemon/yate.git
@@ -18,10 +15,13 @@
 	url = https://github.com/arian/elements.git
 [submodule "www/js/lodash"]
 	path = www/js/lodash
-	url = https://github.com/bestiejs/lodash.git
+	url = git@github.com:lodash/lodash.git
 [submodule "www/js/parsed"]
 	path = www/js/parsed
 	url = git@github.com:jiggliemon/parsed.git
 [submodule "www/js/http"]
 	path = www/js/http
 	url = https://github.com/substack/http-browserify.git
+[submodule "www/js/kiev"]
+	path = www/js/kiev
+	url = git@github.com:jiggliemon/kiev.git
